@@ -55,5 +55,9 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.tooling)
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
-
+    implementation("androidx.compose.material:material-icons-extended:1.7.5")
+    implementation("androidx.datastore:datastore-preferences:1.1.1")
+    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.7")
+    implementation("androidx.core:core-splashscreen:1.0.1")
 }

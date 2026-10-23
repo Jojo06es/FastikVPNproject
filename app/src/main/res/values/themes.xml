@@ -1,5 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Theme.FastikVPNproject" parent="android:Theme.Material.Light.NoActionBar" />
+    <!-- Основная тема окна (после заставки).
+         Реальное оформление рисует Compose (FastikVPNprojectTheme). -->
+    <style name="Theme.FastikVPNproject" parent="android:Theme.Material.NoActionBar" />
+
+    <!-- Стартовая тема: работает, пока показывается заставка.
+         parent="Theme.SplashScreen" приходит из библиотеки core-splashscreen. -->
+    <style name="Theme.FastikVPNproject.Starting" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/splash_background</item>
+        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher</item>
+        <item name="postSplashScreenTheme">@style/Theme.FastikVPNproject</item>
+    </style>
+
 </resources>

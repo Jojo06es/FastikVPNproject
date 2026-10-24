@@ -1,6 +1,5 @@
 package com.khti.fastikvpnproject.ui.screens.home
 
-
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.khti.fastikvpnproject.core.model.ConnectionState
@@ -32,6 +31,7 @@ class HomeViewModel @Inject constructor(
     // когда запускаем новое. Иначе результаты двух запросов перемешаются.
     private var ipJob: Job? = null
     private var pingJob: Job? = null
+    private var timerJob: Job? = null // <-- ДОБАВЛЕНО ДЛЯ ТАЙМЕРА
 
     // init выполняется сразу при создании ViewModel: узнаём IP при запуске экрана
     init {
@@ -71,6 +71,9 @@ class HomeViewModel @Inject constructor(
 
             _uiState.update { it.copy(connectionState = ConnectionState.CONNECTED) }
 
+            // старт тайемера
+            startTimer()
+
             // После подключения заново узнаём IP и замеряем пинг
             refreshIp()
             measurePing()
@@ -80,17 +83,30 @@ class HomeViewModel @Inject constructor(
     private fun disconnect() {
         // Измерение пинга больше не нужно, отменяем его
         pingJob?.cancel()
+        timerJob?.cancel() // <-- ОСТАНОВКА ТАЙМЕРА
 
         _uiState.update {
             it.copy(
                 connectionState = ConnectionState.DISCONNECTED,
                 pingMs = null,
-                isPingLoading = false
+                isPingLoading = false,
+                elapsedSeconds = 0 // <-- СБРОС ВРЕМЕНИ
             )
         }
 
         // После отключения снова узнаём IP
         refreshIp()
+    }
+
+    // таймер
+    private fun startTimer() {
+        timerJob?.cancel() // на всякий случай отмена старого
+        timerJob = viewModelScope.launch {
+            while (true) {
+                delay(1000) // Ждём 1 сек
+                _uiState.update { it.copy(elapsedSeconds = it.elapsedSeconds + 1) }
+            }
+        }
     }
 
     // Узнаём внешний IP из интернета
@@ -105,21 +121,17 @@ class HomeViewModel @Inject constructor(
             _uiState.update { it.copy(ipAddress = ip, isIpLoading = false) }
         }
     }
-
     // ИМИТАЦИЯ измерения пинга: пауза случайной длины и случайное число.
-    // Настоящее измерение тоже не мгновенное: пакет уходит, потом приходит ответ.
     private fun measurePing() {
         pingJob?.cancel()
         _uiState.update { it.copy(isPingLoading = true) }
 
         pingJob = viewModelScope.launch {
             delay(Random.nextLong(PING_MIN_DELAY_MS, PING_MAX_DELAY_MS))
-            // nextInt берёт число из диапазона, верхняя граница не включается, поэтому +1
             val ping = Random.nextInt(PING_MIN_MS, PING_MAX_MS + 1)
             _uiState.update { it.copy(pingMs = ping, isPingLoading = false) }
         }
     }
-
     private companion object {
         const val CONNECT_DELAY_MS = 800L
         const val PING_MIN_MS = 30

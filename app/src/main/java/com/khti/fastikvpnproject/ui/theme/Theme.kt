@@ -1,6 +1,6 @@
 package com.khti.fastikvpnproject.ui.theme
 
-import EnumThemes.ThemeMode
+import com.khti.fastikvpnproject.core.model.ThemeMode
 import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme

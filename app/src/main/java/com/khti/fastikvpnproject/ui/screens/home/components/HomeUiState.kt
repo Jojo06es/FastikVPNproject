@@ -22,5 +22,7 @@ data class HomeUiState(
     val isPingLoading: Boolean = false,
 
     // Показана ли плашка с пингом справа от карточки IP
-    val isPingVisible: Boolean = false
+    val isPingVisible: Boolean = false,
+
+    val elapsedSeconds: Int = 0
 )
